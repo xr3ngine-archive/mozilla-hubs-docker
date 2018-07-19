@@ -87,4 +87,6 @@ COPY ./conf/janus.plugin.sfu.cfg /opt/janus/etc/janus/janus.plugin.sfu.cfg
 COPY ./conf/janus.transport.http.cfg /opt/janus/etc/janus/janus.transport.http.cfg
 COPY ./conf/janus.transport.websockets.cfg /opt/janus/etc/janus/janus.transport.websockets.cfg
 
-EXPOSE 8089 8989
+EXPOSE 8989
+
+CMD [ "./bin/janus" ]

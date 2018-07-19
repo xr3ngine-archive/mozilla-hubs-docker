@@ -1,0 +1,47 @@
+https://hubs.vr.yukimochi.io {
+    gzip
+
+    header / {
+            Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    }
+
+    proxy / https://127.0.0.1:8080/ {
+            transparent
+            websocket
+            insecure_skip_verify
+    }
+
+    tls /cert/fullchain.pem /cert/privkey.pem
+}
+
+https://reticulum.vr.yukimochi.io {
+    gzip
+
+    header / {
+            Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    }
+
+    proxy / https://127.0.0.1:4000/ {
+            transparent
+            websocket
+            insecure_skip_verify
+    }
+
+    tls /cert/fullchain.pem /cert/privkey.pem
+}
+
+https://janus.vr.yukimochi.io {
+    gzip
+
+    header / {
+            Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    }
+
+    proxy / https://127.0.0.1:8989/ {
+            transparent
+            websocket
+            insecure_skip_verify
+    }
+
+    tls /cert/fullchain.pem /cert/privkey.pem
+}
