@@ -38,6 +38,7 @@ RUN apt-get update && \
     libnice-dev \
     libogg-dev \
     libopus-dev \
+    libconfig-dev \
     libssl-dev \
     libsrtp-dev \
     libsofia-sip-ua-dev \
@@ -53,8 +54,9 @@ RUN cd /tmp && \
     tar fx v2.2.0.tar.gz && \
     cd libsrtp-2.2.0 && \
     ./configure --prefix=/usr --enable-openssl && \
-    make shared_library && sudo make install && \
-    cd /tmp && \
+    make shared_library && sudo make install
+    
+RUN cd /tmp && \
     git clone https://github.com/sctplab/usrsctp && \
     cd usrsctp/ && \
     ./bootstrap && \
@@ -68,8 +70,9 @@ RUN cd /tmp && \
     cd build && \
     cmake -DLWS_MAX_SMP=1 -DCMAKE_INSTALL_PREFIX:PATH=/usr -DCMAKE_C_FLAGS="-fpic" .. && \
     make && \
-    make install && \
-    cd /tmp && \
+    make install
+
+RUN cd /tmp && \
     git clone https://github.com/meetecho/janus-gateway.git && \
     cd janus-gateway && \
     sh autogen.sh && \

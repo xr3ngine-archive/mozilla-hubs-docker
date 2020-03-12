@@ -1,26 +1,27 @@
 version: '2.3'
 services:
   hubs:
-    build: hubs
-    image: yukimochi/mr-hubs
+    build: ../hubs
+    image: mustafasaber/mozzila-hubs
     restart: always
     ports:
       - "127.0.0.1:8080:8080"
     environment:
-      - JANUS_SERVER=wss://janus.vr.yukimochi.io
-      - DEV_RETICULUM_SERVER=reticulum.vr.yukimochi.io
+      - JANUS_SERVER=wss://janus
+      - DEV_RETICULUM_SERVER=reticulum
+    network_mode: "host"
 
   reticulum:
-    build: reticulum
-    image: yukimochi/mr-reticulum
+    build: ../reticulum
+    image: mustafasaber/mozzila-reticulum
     restart: always
-    command: bash -c "source ~/.bashrc; pushd assets; yarn; popd; mix deps.get; mix ecto.create; mix ecto.migrate; mix phx.server"
     ports:
       - "127.0.0.1:4000:4000"
-    volumes:
-      - ./reticulum:/ret
+    # volumes:
+    #   - ./reticulum:/ret
     depends_on:
       - db
+    network_mode: "host"
 
   db:
     image: postgres:alpine
@@ -29,6 +30,7 @@ services:
       POSTGRES_PASSWORD: postgres
     volumes:
       - ./postgres:/var/lib/postgresql/data
+    network_mode: "host"
 
   janus:
     build: janus
