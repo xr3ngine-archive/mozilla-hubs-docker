@@ -2,26 +2,34 @@ version: '2.3'
 services:
   hubs:
     build: ../hubs
-    image: mustafasaber/mozzila-hubs
+    image: mozzila-hubs
     restart: always
     ports:
-      - "127.0.0.1:8080:8080"
+      - '8080:8080'
     environment:
       - JANUS_SERVER=wss://janus
       - DEV_RETICULUM_SERVER=reticulum
-    network_mode: "host"
+    # network_mode: "host"
+  spoke:
+    build: ../Spoke
+    image: spoke
+    restart: always
+    ports:
+      - '8081:80'
+    environment:
+      - JANUS_SERVER=wss://janus
+      - DEV_RETICULUM_SERVER=reticulum
+    # network_mode: "host"
 
   reticulum:
     build: ../reticulum
-    image: mustafasaber/mozzila-reticulum
+    image: mozzila-reticulum
     restart: always
     ports:
-      - "127.0.0.1:4000:4000"
-    # volumes:
-    #   - ./reticulum:/ret
+      - '4000:4000'
     depends_on:
       - db
-    network_mode: "host"
+    # network_mode: "host"
 
   db:
     image: postgres:alpine
@@ -34,7 +42,7 @@ services:
 
   janus:
     build: janus
-    image: yukimochi/mr-janus
+    image: janus
     restart: always
     network_mode: "host"
 
