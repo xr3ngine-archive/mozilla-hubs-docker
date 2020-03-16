@@ -38,19 +38,19 @@ services:
       POSTGRES_PASSWORD: postgres
     volumes:
       - ./postgres:/var/lib/postgresql/data
-    network_mode: "host"
+    # network_mode: "host"
 
   janus:
     build: janus
     image: janus
     restart: always
-    network_mode: "host"
+    # network_mode: "host"
 
-  caddy:
-    image: yukimochi/container-caddy
-    restart: always
-    network_mode: "host"
-    volumes:
-      - ./caddy/cert:/cert
-      - ./caddy/conf:/etc/caddy
-      - ./caddy/logs:/var/log/caddy
+  # caddy:
+  #   image: yukimochi/container-caddy
+  #   restart: always
+  #   network_mode: "host"
+  #   volumes:
+  #     - ./caddy/cert:/cert
+  #     - ./caddy/conf:/etc/caddy
+  #     - ./caddy/logs:/var/log/caddy
