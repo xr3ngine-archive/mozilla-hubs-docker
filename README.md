@@ -1,3 +1,5 @@
+# Clone all componenets
+
 ``` bash
 # clone all repos
 git clone git@github.com:aichildren/reticulum.git
@@ -17,3 +19,20 @@ git checkout k8s
 popd
 
 ```
+
+# Build docker images
+
+Assuming you have docker installed..
+
+```
+cd mozilla-hubs-docker
+docker-compose build
+docker-compose up
+```
+
+then browse to:
+
+- hubs: http://localhost:8080/
+- Spoke: http://localhost:8081/
+
+some assets and images will not be visible yet
