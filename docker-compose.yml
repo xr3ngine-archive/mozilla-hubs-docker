@@ -5,7 +5,7 @@ services:
     image: mozzila-hubs
     restart: always
     ports:
-      - '8080:8080'
+      - '8080:80'
     environment:
       - JANUS_SERVER=wss://janus
       - DEV_RETICULUM_SERVER=reticulum
@@ -25,6 +25,9 @@ services:
     build: ../reticulum
     image: mozzila-reticulum
     restart: always
+    environment:
+      - "DB_HOST=db"
+
     ports:
       - '4000:4000'
     depends_on:
