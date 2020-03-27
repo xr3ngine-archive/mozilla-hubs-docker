@@ -1,38 +1,72 @@
 version: '2.3'
 services:
   hubs:
-    build: ../hubs
+    build: 
+      context: ../hubs
+      args:   # not env because they are used in build time
+        - HOST="hubs.local"
+        - CORS_PROXY_HOST=hubs-proxy.local
+        - RETICULUM_SOCKET_SERVER="hubs.local"
+        - CORS_PROXY_SERVER=hubs-proxy.local:4000
+        - NON_CORS_PROXY_DOMAINS=hubs.local,dev.reticulum.io
+        - BASE_ASSETS_PATH=https://hubs.local:8080/
+        - RETICULUM_SERVER="hubs.local:4000"
+        - POSTGREST_SERVER="" 
+        - ITA_SERVER=""
+        # - NGINX_HOST=hubs.local
+        # - NGINX_PORT=80
     image: mozzila-hubs
     restart: always
     ports:
-      - '8080:80'
-    environment:
-      - JANUS_SERVER=wss://janus
-      - DEV_RETICULUM_SERVER=reticulum
-    # network_mode: "host"
+      - '8080:443'
+    # network_mode: host
+  admin:
+    build: 
+      context: ../hubs/admin
+      args:   # not env because they are used in build time
+        - HOST="hubs.local"
+        - CORS_PROXY_HOST=hubs-proxy.local
+        - RETICULUM_SOCKET_SERVER="hubs.local"
+        - CORS_PROXY_SERVER=hubs-proxy.local:4000
+        - NON_CORS_PROXY_DOMAINS=hubs.local,dev.reticulum.io
+        - BASE_ASSETS_PATH=https://hubs.local:8989/
+        - RETICULUM_SERVER="hubs.local:4000"
+        - POSTGREST_SERVER="" 
+        - ITA_SERVER=""
+        # - NGINX_HOST=hubs.local
+        # - NGINX_PORT=80
+    image: mozzila-hubs-admin
+    restart: always
+    ports:
+      - '8989:443'
   spoke:
     build: ../Spoke
     image: spoke
     restart: always
     ports:
-      - '8081:80'
+      - '9090:433'
     environment:
-      - JANUS_SERVER=wss://janus
-      - DEV_RETICULUM_SERVER=reticulum
-    # network_mode: "host"
-
+      - HOST="hubs.local"
+    # network_mode: host
+  
   reticulum:
     build: ../reticulum
     image: mozzila-reticulum
     restart: always
     environment:
-      - "DB_HOST=db"
-
+      - DB_HOST=db
+      - MIX_ENV=dev
+      - HUBS_HOST=hubs
+      - HUBS_PORT=443
+      - ADMIN_HOST=hubs
+      - ADMIN_PORT=444
+      - SPOKE_HOST=spoke
+      - SPOKE_PORT=80
     ports:
       - '4000:4000'
     depends_on:
       - db
-    # network_mode: "host"
+    # network_mode: host
 
   db:
     image: postgres:alpine
@@ -41,13 +75,24 @@ services:
       POSTGRES_PASSWORD: postgres
     volumes:
       - ./postgres:/var/lib/postgresql/data
-    # network_mode: "host"
+    ports:
+      - 5432:5432
+    # network_mode: host
+  
+  adminer:
+    image: adminer
+    #restart: always
+    ports:
+      - 8082:8080
+    depends_on:
+      - db
+    # network_mode: host
 
   janus:
     build: janus
     image: janus
     restart: always
-    # network_mode: "host"
+    # network_mode: host
 
   # caddy:
   #   image: yukimochi/container-caddy
@@ -57,3 +102,16 @@ services:
   #     - ./caddy/cert:/cert
   #     - ./caddy/conf:/etc/caddy
   #     - ./caddy/logs:/var/log/caddy
+  reverse-proxy:
+    # The official v2 Traefik docker image
+    image: traefik:v2.1
+    # Enables the web UI and tells Traefik to listen to docker
+    command: --api.insecure=true --providers.docker
+    ports:
+      # The HTTP port
+      - "80:80"
+      # The Web UI (enabled by --api.insecure=true)
+      - "8083:8080"
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
